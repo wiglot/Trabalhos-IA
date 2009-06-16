@@ -126,7 +126,7 @@ InstanceVRP Read::readVRP ( ){
 	cout << vrp->getPoint(i)->getNumber() << endl;
 	
 	file_ptr.close();
-	
+
 	return *vrp;
 }
     

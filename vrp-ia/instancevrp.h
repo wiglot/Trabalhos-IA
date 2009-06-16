@@ -22,7 +22,7 @@ public:
      * Set the value of points
      * @param new_var the new value of points
      */
-    void setPoints ( vector< Point * > new_var )     {
+    void setPoints ( vector<Point *> new_var )     {
             points = new_var;
     }
 
@@ -40,7 +40,6 @@ public:
      */
     void setDeposit ( int new_var )     {
             deposit = points.at(new_var);
-            points.erase(points.begin() + new_var);
     }
 
     /**
@@ -101,16 +100,21 @@ public:
 	 * @brief Devolve a capacide de transporte.
 	 */
 	inline int getCapacity(){return this->capacity;}
+	
+	void criaMatrizDistancias();
+	inline void setDistancia(int i, int j, double d){ m[i][j] =  d;}
+	inline double getDistancia(int i, int j){ return m[i][j]; }
+	void imprimeMatrizDistancias();
 
 private:
 
     // Private attributes
     //  
     int capacity;
-	string name;
+    string name;
     vector< Point* > points;
     Point* deposit;
-
+    double **m;
 
 };
 
