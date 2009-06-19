@@ -103,7 +103,16 @@ public:
 	
 	void criaMatrizDistancias();
 	inline void setDistancia(int i, int j, double d){ m[i][j] =  d;}
-	inline double getDistancia(int i, int j){ return m[i][j]; }
+	inline double getDistancia(int i, int j){ 
+		if( i > j ) 
+			return m[i][j];
+		else 
+			if ( j > i )  
+				return m[j][i];
+			else
+				return 0;
+	}
+	
 	void imprimeMatrizDistancias();
 
 private:

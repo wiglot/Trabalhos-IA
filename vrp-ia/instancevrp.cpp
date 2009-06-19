@@ -25,11 +25,11 @@ void InstanceVRP::criaMatrizDistancias(){
 
 	cout << "criando  distancias para pontos...\n" ;	
 	for(i = 0; i < this->points.size(); i++){
-		this->m[i] = new double[points.size()];
-		for(j = 0; j < this->points.size(); j++){
+		this->m[i] = new double[i];
+		for(j = 0; j < i; j++){
 			double dx = (points[i]->getX() - points[j]->getX())*(points[i]->getX() - points[j]->getX());
 			double dy = (points[i]->getY() - points[j]->getY())*(points[i]->getY() - points[j]->getY());
-			d = sqrt(abs(dx) + abs(dy));
+			d = sqrt(dx + dy);
 			this->m[i][j] = d;
 		}	
 	}
