@@ -20,11 +20,16 @@ public:
 	inline void setRota(vector<int> r){ this->rota = r; }
 	inline vector<int> getRota(){ return this->rota; }
 	
+	inline int getTamanhoRota(){return rota.size();}
+	
 	inline void setInstance(InstanceVRP* i){ this->i = i; }
 	
 	void setCusto();
 	inline void getCusto(){ return this->custoRota; }
 	
+	inline bool operator<(const Rota& rota){
+		return (this->custoRota < rota.getCusto());
+	}
 
 };
 

@@ -25,6 +25,7 @@ private:
 	void geraTodasRotas();
 	Rota* geraRota();
 	
+	static Rota* crossover(Rota* rota1, Rota* rota2);
 };
 
 #endif
