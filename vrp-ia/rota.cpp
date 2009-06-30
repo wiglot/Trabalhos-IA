@@ -18,6 +18,7 @@ Rota::Rota():custoRota(0){
 
 void Rota::setCusto(){
 	int j;
+	this->custoRota = 0.0;
 	for(j = 0; j < (this->rota.size() - 1); j++){
 		this->custoRota += this->i->getDistancia(rota[j], rota[j+1]);
 	}

@@ -26,6 +26,8 @@ private:
 	Rota* geraRota();
 	bool getVisitado(vector<int> visitados, int pos);
 
+	Rota* crossover2(Rota* rota1, Rota* rota2);
+	Rota* crossover1(Rota* rota1, Rota* rota2);
 	Rota* crossover(Rota* rota1, Rota* rota2);
 	
 };

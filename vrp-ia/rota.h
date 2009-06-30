@@ -9,7 +9,7 @@ class Rota{
 private:
 	vector<int> rota;
 	InstanceVRP *i;
-	int custoRota;
+	double custoRota;
 	
 public:
 	Rota();
@@ -25,7 +25,7 @@ public:
 	inline void setInstance(InstanceVRP* i){ this->i = i; }
 	
 	void setCusto();
-	inline int getCusto(){ return this->custoRota; }
+	inline double getCusto(){ return this->custoRota; }
 	
 //	inline bool operator<(const Rota& rota){
 //		return (this->custoRota < rota.getCusto());
