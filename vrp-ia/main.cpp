@@ -31,6 +31,8 @@ using namespace std;
 #include "point.h"
 #include "instancevrp.h"
 #include "read.h"
+#include "rota.h"
+#include "solucao.h"
 
 int main(int argc, char **argv){
 	Read le = Read();
@@ -41,7 +43,8 @@ int main(int argc, char **argv){
 	cout << "Criando matriz..." << endl;
 	vrp.criaMatrizDistancias();
 	cout << "Matriz criada..." << endl;
-	vrp.imprimeMatrizDistancias();
+	Solucao* sol = new Solucao(&vrp, 2);
+	//vrp.imprimeMatrizDistancias();
 	return 0;
 }
 

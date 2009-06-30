@@ -1,3 +1,4 @@
+
 #ifndef SOLUCAO_H
 #define SOLUCAO_H
 
@@ -9,7 +10,6 @@ public:
 	Solucao(InstanceVRP* instance, int numSolucoes);
 	~Solucao();
 	
-	const int NUM_SOLUCOES;
 	
 	Rota* getRota(unsigned short indice){ return rotas.at(indice);}
 	void setRota(Rota* rota, unsigned short indice);
@@ -24,8 +24,10 @@ private:
 	void rankeia();
 	void geraTodasRotas();
 	Rota* geraRota();
+	bool getVisitado(vector<int> visitados, int pos);
+
+	Rota* crossover(Rota* rota1, Rota* rota2);
 	
-	static Rota* crossover(Rota* rota1, Rota* rota2);
 };
 
 #endif

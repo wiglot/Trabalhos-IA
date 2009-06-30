@@ -12,7 +12,7 @@ using namespace std;
 #include "instancevrp.h"
 #include "rota.h"
 
-Rota::Rota():custoTotal(0){
+Rota::Rota():custoRota(0){
 
 }
 

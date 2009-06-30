@@ -23,10 +23,14 @@
   * 
   * This will open a file and read a instance from VRP
   */
+#include <ostream>
+#include <istream>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cmath>
+
 using namespace std;
 
 #include "point.h"
@@ -115,7 +119,8 @@ InstanceVRP Read::readVRP ( ){
 		//Demanda
 		pos = newpos  + 1;
 		newpos = line.find_first_of(" ", pos+1);
-		vrp->getPoint(j = 1)->setDemand( Read::str2int(line.substr(pos, newpos-pos)));
+		vrp->getPoint(j - 1)->setDemand( Read::str2int(line.substr(pos, newpos-pos)));
+		cout << vrp->getPoint(j-1)->getDemand() << endl;
 	}
 	
 	getline (file_ptr, line);
