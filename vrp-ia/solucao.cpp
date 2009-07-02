@@ -28,13 +28,13 @@ Solucao::Solucao(InstanceVRP* instance, int numSolucoes)
 	cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << endl;
 	rankeia();
 	cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << endl;
-	for (unsigned short i = 0 ; i< 200; i++){
+	/*for (unsigned short i = 0 ; i< 200; i++){
 		rotas.push_back(crossover1(rotas[(i+1)%2], rotas[i%2]));
 		rotas.push_back(crossover1(rotas[(i+1)%3], rotas[i%2]));
 		cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << " Custo Rota 3: "<< rotas[2]->getCusto() << " Custo Rota 4: "<< rotas[3]->getCusto()<< endl;
 		rankeia();	
 		
-	}
+	}*/
 }
 
 void Solucao::geraTodasRotas(){
@@ -45,11 +45,11 @@ void Solucao::geraTodasRotas(){
 	}
 }
 
-Rota* Solucao::geraRota(){
-/*
-	Seleciona aleatoriamente um indice para um ponto consumidor (!= 0), marca ele como visitado.
-	Se a inserção estoura a capacidade do veiculo, insere o ponto depósito e insere a o ponto.(zera capacidade) 
-*/      Rota *rota = new Rota();
+/*Rota* Solucao::geraRota(){
+
+//	Seleciona aleatoriamente um indice para um ponto consumidor (!= 0), marca ele como visitado.
+//	Se a inserção estoura a capacidade do veiculo, insere o ponto depósito e insere a o ponto.(zera capacidade) 
+       Rota *rota = new Rota();
         vector<int> visitados;
         int capacidade = 0, i, pos;
 	int cont = instance->getCapacity();
@@ -97,7 +97,71 @@ Rota* Solucao::geraRota(){
 	cout << rota->getCusto() << endl;
 	
 	return rota;
+}*/
+
+Rota* Solucao::geraRota(){
+/*
+    Seleciona aleatoriamente um indice para um ponto consumidor (!= 0), marca ele como visitado.
+    Se a inserção estoura a capacidade do veiculo, insere o ponto depósito e insere a o ponto.(zera capacidade) 
+*/     Rota *rota = new Rota();
+        vector<int> visitados;
+        int capacidade = 0, i = 0, j, pos;
+        int cont = instance->getCapacity();
+        rota->setInstance(this->instance);
+        rota->setPonto(0);
+        vector<Point*> points = instance->getPoints();
+        cout << "Capacidade " << cont << endl;
+        while(i < instance->getPoints().size()){
+		  pos = rand() % points.size();
+//pegar primeiro ponto aleatório e, a partir daí, escolher o próximo ponto mais próximo dele percorrendo a matriz de
+//distâncias. Se o menor ponto ainda naum tiver sido inserido e for diferente de zero ele é aceito. naum tah funcionando...ele tah voltando sempre para o mesmo ponto...naum tah marcando como visitado...
+		 cout << "Posicao inicial:" << pos << endl;
+		 if((pos != 0) && (getVisitado(visitados, pos))){
+		           rota->setPonto(pos);
+		           if(points[pos]->getDemand() < cont)
+			           capacidade += points[pos]->getDemand();
+		           else
+		           	break;
+		           while(capacidade != 0){               
+	       		            int menor = 1;
+	       		            for(j = 2; j < pos; j++){
+				            if((instance->getDistancia(pos, j) < instance->getDistancia(pos, menor)) && (pos != j) && getVisitado(visitados, j)){
+				        			menor = j;
+				           }
+		           	   }
+				  //cout << "Distancia de " << pos << " para " << menor << " " << instance->getDistancia(pos, menor) << endl;
+				  pos = menor;			       
+				  if(((capacidade + points[pos]->getDemand()) <= cont)){
+				  	if(getVisitado(visitados, pos)){
+				  	        capacidade += points[pos]->getDemand();
+				  	        rota->setPonto(pos);
+						visitados.push_back(pos);                           
+						i++;
+					 }
+				 }
+				 else{
+				     rota->setPonto(0);
+				     capacidade = 0;
+				}               
+		          }
+		   }
+	    }
+	     rota->setPonto(0);
+	    cout << "Gerou uma rota" << endl;
+	    vector<int> tmp = rota->getRota();
+	    for(i = 0; i < tmp.size(); i++)
+		if(tmp[i] == 0)
+		    cout << tmp[i] << endl;
+		else
+		    cout << tmp[i] << " ";
+	    rota->setCusto();
+	    cout << "\n";
+	    cout << rota->getCusto() << endl;
+	   
+	    return rota;
 }
+
+
 
 bool Solucao::getVisitado(vector<int> visitados, int pos){
 	int i;
