@@ -411,7 +411,7 @@ Rota* Solucao::crossover1(Rota* rota1, Rota* rota2){
 }
 
 Rota* Solucao::crossover(Rota* rota1, Rota* rota2){
-	short probabilidade = (short) (rota1->getCusto() / (double)(rota1->getCusto() + rota2->getCusto()))* 100;
+	short probabilidade = 50;
 	int posRota1 = 0, posRota2 = 0;
 	int novoPonto;
 	int i;
@@ -427,58 +427,40 @@ Rota* Solucao::crossover(Rota* rota1, Rota* rota2){
 	for (i = 0; i < instance->getNumPoints(); i++)
 		usado[i] = false;
 		 
-	while ((posRota1 < rota1->getTamanho()) || (posRota2 < rota2->getTamanho())){
+	while ((posRota1 < rota1->getTamanho()) && (posRota2 < rota2->getTamanho())){
 		if ((rand() % 100 ) < probabilidade){
 			//Add rota2
 			do{
 				novoPonto = rota2->getPonto(posRota2++);
-		//		cout << novoPonto << "Ponto2 - ";
-			}while (usado[novoPonto] &&  (posRota2 < rota2->getTamanho()));
-//			cout << "Selecionado Ponto 2\n";
-			
-			if (novoPonto != 0)
-				usado[novoPonto] = true;
-				
-			custoAcumulado += instance->getDistancia(ant, novoPonto);
-			if (custoAcumulado > instance->getCapacity()){
-				if (novoPonto != 0)
-					novaRota->setPonto(0);
-				custoAcumulado = instance->getDistancia(0, novoPonto);
-				ant = novoPonto;
+			}while ((posRota2 < rota2->getTamanho()) && novoPonto != 0);
+
+			if (novoPonto != 0 && !usado[novoPonto]){
+				posRota1++;
+				novaRota->setPonto(novoPonto);
 			}
-			novaRota->setPonto(novoPonto);
-			if (posRota2 == rota2->getTamanho())
-				probabilidade = -1;
-				// Testar se é valida (quanto a demanda)???
+
 		}else{
 			//Add rota1;
 			do{
 				novoPonto = rota1->getPonto(posRota1++);
-		//		cout << novoPonto << "Ponto1 - ";
-			}while(usado[novoPonto] &&  (posRota1 < rota1->getTamanho()));
-//			cout << "Selecionado Ponto 1\n";
-			
-			if (novoPonto != 0)
-				usado[novoPonto] = true;
-				
-			custoAcumulado += instance->getDistancia(ant, novoPonto);
-			if (custoAcumulado > instance->getCapacity()){
-				if (novoPonto != 0)
-					novaRota->setPonto(0);
-				custoAcumulado = instance->getDistancia(0, novoPonto);
-				ant = novoPonto;
-			}
+			}while(posRota1 < rota1->getTamanho() && novoPonto != 0);
 
-			novaRota->setPonto(novoPonto);
+			if (novoPonto != 0 && !usado[novoPonto]){
+				posRota2++;
+				novaRota->setPonto(novoPonto);
+			}
 			
-			if (posRota1 == rota1->getTamanho())
-				probabilidade = 100;
 		}	
 	}
 
-
+	for (i = 1; i < instance->getNumPoints(); i++)
+		if (!usado[i])
+			novaRota->setPonto(i);
 	
-	novaRota->setPonto(0);
+	//Aqui faz as divisões das rotas...
+	rota->corrigeRota();
+	
+//	novaRota->setPonto(0);
 	novaRota->setCusto();
 	
 	return novaRota;

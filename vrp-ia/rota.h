@@ -26,6 +26,8 @@ public:
 	
 	void setCusto();
 	inline double getCusto(){ return this->custoRota; }
+
+	void corrigeRota();
 	
 //	inline bool operator<(const Rota& rota){
 //		return (this->custoRota < rota.getCusto());
