@@ -34,9 +34,18 @@ Solucao::Solucao(InstanceVRP* instance, int numSolucoes)
 void Solucao::geraTodasRotas(){
 	unsigned short i;
 	Rota* tmp;
-//	for (i = 0 ; i < (this->getNumSolucoes()/2); i++){
-//		rotas.push_back(geraRotaHeuristica());
-//	}
+
+/*	for (i = 0 ; i < (this->getNumSolucoes()/2); i++){
+		tmp = geraRotaHeuristica();
+		if (tmp->validaRota())
+			rotas.push_back(tmp);
+		else{
+			i--;
+			cout << "gerada rota invalida!\n";
+		}
+	}
+*/
+	
 	for (i = 0 ; i < (this->getNumSolucoes()); i++){
 		tmp = geraRotaAleatoria();
 		if (tmp->validaRota())
@@ -44,7 +53,7 @@ void Solucao::geraTodasRotas(){
 		else{
 			i--;
 			cout << "gerada rota invalida!\n";
-			}
+		}
 	}
 }
 
@@ -59,12 +68,11 @@ Rota* Solucao::geraRotaAleatoria(){
 	rota->setInstance(this->instance);
 	rota->setPonto(0);
 	vector<Point*> points = instance->getPoints();
-//	cout << "Capacidade " << cont << endl;
 	for(i = 0; i < points.size()-1; i++){
 		do {
 			pos = rand() % points.size();
 		} while (!getVisitado(visitados, pos) && pos!=0);
-//		if((getVisitado(visitados, pos))){
+
 	
 		if((capacidade + points[pos]->getDemand()) <= cont){
 			capacidade += points[pos]->getDemand();
@@ -78,18 +86,27 @@ Rota* Solucao::geraRotaAleatoria(){
 			visitados.push_back(pos);								
 		}
 		
-/*		}else{
-			if(i < instance->getPoints().size())
-				i--;
+
+	}
+
+	
+	for(i = 0; i < points.size()-1; i++){
+		if (getVisitado(visitados, i)){
+			if((capacidade + points[i]->getDemand()) <= instance->getCapacity()){
+				capacidade += points[i]->getDemand();
+				rota->setPonto(i);
+				visitados.push_back(i);
+			}
 			else{
 				rota->setPonto(0);
-				break;
+				rota->setPonto(i);
+				capacidade = points[i]->getDemand();
+				visitados.push_back(i);								
 			}
 		}
-*/
 	}
-//	cout << "Gerou uma rota" << endl;
 	rota->setPonto(0);
+	
 	vector<int> tmp = rota->getRota();
 	for(i = 0; i < tmp.size(); i++)
 		if(tmp[i] == 0)
@@ -201,7 +218,10 @@ void Solucao::start(int numGeracoes, int elite){
 		//Tinha que ter round, não apenas ranking...
 		
 		rankeia();
-		cout << "1;" << rotas[0]->getCusto() << ";2;"<< rotas[1]->getCusto() << ";3;"<< rotas[2]->getCusto() << ";4;"<< rotas[3]->getCusto()<< endl;
+		for (j = 0; j < this->numSolucoes; j++){
+			cout << rotas[j]->getCusto() << ";" ;
+		}
+		cout << endl;
 		
 	}
 	
