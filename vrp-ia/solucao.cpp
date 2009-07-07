@@ -17,8 +17,8 @@ using namespace std;
 #include "solucao.h"
 
 Solucao::Solucao(InstanceVRP* instance, int numSolucoes)
-	:instance(instance)
-	,numSolucoes(numSolucoes)
+:instance(instance)
+,numSolucoes(numSolucoes)
 {
 
 	srand(time(NULL));
@@ -27,64 +27,130 @@ Solucao::Solucao(InstanceVRP* instance, int numSolucoes)
 	cout << "Gerou rotas..." << endl;
 	cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << endl;
 	rankeia();
-	cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << endl;
-	/*for (unsigned short i = 0 ; i< 200; i++){
-		rotas.push_back(crossover1(rotas[(i+1)%2], rotas[i%2]));
-		rotas.push_back(crossover1(rotas[(i+1)%3], rotas[i%2]));
-		cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << " Custo Rota 3: "<< rotas[2]->getCusto() << " Custo Rota 4: "<< rotas[3]->getCusto()<< endl;
-		rankeia();	
-		
-	}*/
+	cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << " Custo Rota 3: "<< rotas[2]->getCusto() << " Custo Rota 4: "<< rotas[3]->getCusto()<< endl;
+	
 }
 
 void Solucao::geraTodasRotas(){
 	unsigned short i;
-	for (i = 0 ; i < this->getNumSolucoes(); i++){
-		rotas.push_back(geraRota());
-		cout << "Gerou rota " << i << endl;
+	Rota* tmp;
+//	for (i = 0 ; i < (this->getNumSolucoes()/2); i++){
+//		rotas.push_back(geraRotaHeuristica());
+//	}
+	for (i = 0 ; i < (this->getNumSolucoes()); i++){
+		tmp = geraRotaAleatoria();
+		if (tmp->validaRota())
+			rotas.push_back(tmp);
+		else{
+			i--;
+			cout << "gerada rota invalida!\n";
+			}
 	}
 }
 
-/*Rota* Solucao::geraRota(){
 
-//	Seleciona aleatoriamente um indice para um ponto consumidor (!= 0), marca ele como visitado.
-//	Se a inserção estoura a capacidade do veiculo, insere o ponto depósito e insere a o ponto.(zera capacidade) 
-       Rota *rota = new Rota();
-        vector<int> visitados;
-        int capacidade = 0, i, pos;
+Rota* Solucao::geraRotaAleatoria(){
+	//	Seleciona aleatoriamente um indice para um ponto consumidor (!= 0), marca ele como visitado.
+	//	Se a inserção estoura a capacidade do veiculo, insere o ponto depósito e insere a o ponto.(zera capacidade)
+	Rota *rota = new Rota();
+	vector<int> visitados;
+	int capacidade = 0, i, pos;
 	int cont = instance->getCapacity();
 	rota->setInstance(this->instance);
-        rota->setPonto(0);
-        vector<Point*> points = instance->getPoints();
-	cout << "Capacidade " << cont << endl;
-        for(i = 0; i < points.size(); i++){
-                pos = rand() % points.size();
-//		cout << "POS escolhida em " << i << "=" << pos << endl;
-                if((pos != 0) && (getVisitado(visitados, pos))){
-//			cout << "Posicao naum foi visitada e eh diferente de zero" << endl;
-			//cout << "Demanda do ponto " << pos << "=" << points[pos]->getDemand() << endl; 
-
-	                if((capacidade + points[pos]->getDemand()) <= cont){
-//			    cout << "capacidade naum foi excedida...pos incluida na rota " << endl;
-	                    capacidade += points[pos]->getDemand();
-	                    rota->setPonto(pos);
-	                    visitados.push_back(pos);
-	                }
-	                else{
-//			     cout << "Posicao excede a capacidade..." << endl;
-	                     rota->setPonto(0);
-	                     capacidade = 0;
-	                }
-                }else{
-	//		     cout << "Posicao jah foi visitada" << endl;
-			     if(i < instance->getPoints().size())
-			   	     i--;
-			    else{
-				    rota->setPonto(0);
-				      break;
-		            }
-                }
+	rota->setPonto(0);
+	vector<Point*> points = instance->getPoints();
+//	cout << "Capacidade " << cont << endl;
+	for(i = 0; i < points.size()-1; i++){
+		do {
+			pos = rand() % points.size();
+		} while (!getVisitado(visitados, pos) && pos!=0);
+//		if((getVisitado(visitados, pos))){
+	
+		if((capacidade + points[pos]->getDemand()) <= cont){
+			capacidade += points[pos]->getDemand();
+			rota->setPonto(pos);
+			visitados.push_back(pos);
+		}
+		else{
+			rota->setPonto(0);
+			rota->setPonto(pos);
+			capacidade = points[pos]->getDemand();
+			visitados.push_back(pos);								
+		}
+		
+/*		}else{
+			if(i < instance->getPoints().size())
+				i--;
+			else{
+				rota->setPonto(0);
+				break;
+			}
+		}
+*/
 	}
+//	cout << "Gerou uma rota" << endl;
+	rota->setPonto(0);
+	vector<int> tmp = rota->getRota();
+	for(i = 0; i < tmp.size(); i++)
+		if(tmp[i] == 0)
+			cout << tmp[i] << endl;
+		else
+			cout << tmp[i] << " ";
+	rota->setCusto();
+	cout << "\n";
+	cout << rota->getCusto() << endl;
+
+	return rota;
+}
+Rota* Solucao::geraRotaHeuristica(){
+	Rota *rota = new Rota();
+	vector<int> visitados;
+	int capacidade = 0, i = 0, j, pos, menor;
+	int cont = instance->getCapacity();
+	rota->setInstance(this->instance);
+	rota->setPonto(0);
+	vector<Point*> points = instance->getPoints();
+	while(i < (instance->getNumPoints()-1)){
+		pos = rand() % instance->getNumPoints();
+		if((pos != 0) && getVisitado(visitados, pos)){
+			rota->setPonto(pos);
+			capacidade += points[pos]->getDemand();
+			visitados.push_back(pos);
+			i++;
+		}
+		while((capacidade != 0)){
+			double dist = 1000000.0;
+			menor = -1;
+			for(j = 1; j < instance->getNumPoints(); j++){
+				if (getVisitado(visitados, j) && j != pos && menor != pos){
+//					cout << instance->getDistancia(pos, j) << " " << instance->getDistancia(pos, menor) << endl;
+					if((instance->getDistancia(pos, j) < dist)){
+						dist = instance->getDistancia(pos, j);
+						menor = j;
+					}
+				}
+			}
+			if (-1 == menor){
+				capacidade = 0;
+				rota->setPonto(0);
+			}else{
+				if(capacidade + points[menor]->getDemand() <= cont){
+					pos = menor;
+					rota->setPonto(pos);
+					capacidade += points[pos]->getDemand();
+					visitados.push_back(pos);
+					i++;
+				}else{
+					capacidade = 0;
+					rota->setPonto(0);
+				}
+			}
+			if (i == instance->getNumPoints()){
+				capacidade = 0;
+			}
+		}
+	}
+	rota->setPonto(0);
 	cout << "Gerou uma rota" << endl;
 	vector<int> tmp = rota->getRota();
 	for(i = 0; i < tmp.size(); i++)
@@ -95,70 +161,8 @@ void Solucao::geraTodasRotas(){
 	rota->setCusto();
 	cout << "\n";
 	cout << rota->getCusto() << endl;
-	
-	return rota;
-}*/
 
-Rota* Solucao::geraRota(){
-/*
-    Seleciona aleatoriamente um indice para um ponto consumidor (!= 0), marca ele como visitado.
-    Se a inserção estoura a capacidade do veiculo, insere o ponto depósito e insere a o ponto.(zera capacidade) 
-*/     Rota *rota = new Rota();
-        vector<int> visitados;
-        int capacidade = 0, i = 0, j, pos;
-        int cont = instance->getCapacity();
-        rota->setInstance(this->instance);
-        rota->setPonto(0);
-        vector<Point*> points = instance->getPoints();
-        cout << "Capacidade " << cont << endl;
-        while(i < instance->getPoints().size()){
-		  pos = rand() % points.size();
-//pegar primeiro ponto aleatório e, a partir daí, escolher o próximo ponto mais próximo dele percorrendo a matriz de
-//distâncias. Se o menor ponto ainda naum tiver sido inserido e for diferente de zero ele é aceito. naum tah funcionando...ele tah voltando sempre para o mesmo ponto...naum tah marcando como visitado...
-		 cout << "Posicao inicial:" << pos << endl;
-		 if((pos != 0) && (getVisitado(visitados, pos))){
-		           rota->setPonto(pos);
-		           if(points[pos]->getDemand() < cont)
-			           capacidade += points[pos]->getDemand();
-		           else
-		           	break;
-		           while(capacidade != 0){               
-	       		            int menor = 1;
-	       		            for(j = 2; j < pos; j++){
-				            if((instance->getDistancia(pos, j) < instance->getDistancia(pos, menor)) && (pos != j) && getVisitado(visitados, j)){
-				        			menor = j;
-				           }
-		           	   }
-				  //cout << "Distancia de " << pos << " para " << menor << " " << instance->getDistancia(pos, menor) << endl;
-				  pos = menor;			       
-				  if(((capacidade + points[pos]->getDemand()) <= cont)){
-				  	if(getVisitado(visitados, pos)){
-				  	        capacidade += points[pos]->getDemand();
-				  	        rota->setPonto(pos);
-						visitados.push_back(pos);                           
-						i++;
-					 }
-				 }
-				 else{
-				     rota->setPonto(0);
-				     capacidade = 0;
-				}               
-		          }
-		   }
-	    }
-	     rota->setPonto(0);
-	    cout << "Gerou uma rota" << endl;
-	    vector<int> tmp = rota->getRota();
-	    for(i = 0; i < tmp.size(); i++)
-		if(tmp[i] == 0)
-		    cout << tmp[i] << endl;
-		else
-		    cout << tmp[i] << " ";
-	    rota->setCusto();
-	    cout << "\n";
-	    cout << rota->getCusto() << endl;
-	   
-	    return rota;
+	return rota;
 }
 
 
@@ -168,9 +172,41 @@ bool Solucao::getVisitado(vector<int> visitados, int pos){
 	for(i = 0; i < visitados.size(); i++){
 		if(visitados[i] == pos)
 			return false;
-	
+
 	}
 	return true;
+}
+
+void Solucao::start(int numGeracoes, int elite){
+	int i, j;
+	
+	//vector <Rota*> novosIndividuos;
+	Rota* tmp;
+	elite = ceil(numSolucoes/100.0 * elite);
+	
+	for (i = 0 ; i< numGeracoes; i++){
+	
+		for (j = 0; j < this->numSolucoes; j++){
+			int rota1 = rand()%elite;
+			int rota2 = (rand()%(this->numSolucoes-elite))+elite;
+			//cout << "Crossover entre rota " << rota1  << " e " << rota2 << endl;
+			tmp = crossover(rotas[rota1], rotas[rota2]);
+			if (tmp != 0)
+				rotas.push_back(tmp);
+			else{
+				j--;
+			}
+			//cout << "Terminou crossover \n";
+		}
+		//Tinha que ter round, não apenas ranking...
+		
+		rankeia();
+		cout << "1;" << rotas[0]->getCusto() << ";2;"<< rotas[1]->getCusto() << ";3;"<< rotas[2]->getCusto() << ";4;"<< rotas[3]->getCusto()<< endl;
+		
+	}
+	
+	cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << " Custo Rota 3: "<< rotas[2]->getCusto() << " Custo Rota 4: "<< rotas[3]->getCusto()<< endl;
+
 }
 
 void Solucao::rankeia(){
@@ -187,9 +223,9 @@ void Solucao::rankeia(){
 	}
 		
 	if (rotas.size() > this->getNumSolucoes()){
-		for (i = 2; i < rotas.size(); i++)
+		for (i = this->getNumSolucoes(); i < rotas.size(); i++)
 			delete rotas.at(i);
-		rotas.erase (rotas.begin()+2, rotas.end());
+		rotas.erase (rotas.begin()+this->getNumSolucoes(), rotas.end());
 	}
 	
 }
@@ -412,7 +448,7 @@ Rota* Solucao::crossover1(Rota* rota1, Rota* rota2){
 
 Rota* Solucao::crossover(Rota* rota1, Rota* rota2){
 	short probabilidade = 50;
-	int posRota1 = 0, posRota2 = 0;
+	int posRota1 = 1, posRota2 = 1;
 	int novoPonto;
 	int i;
 	bool *usado;
@@ -457,9 +493,14 @@ Rota* Solucao::crossover(Rota* rota1, Rota* rota2){
 		if (!usado[i])
 			novaRota->setPonto(i);
 	
-	//Aqui faz as divisões das rotas...
-	rota->corrigeRota();
-	
+	//Aplica Mutação...
+	novaRota->mutate();
+	//...e faz as divisões das rotas...
+	novaRota->corrigeRota();
+	if (!novaRota->validaRota()){
+		delete novaRota;
+		return 0;
+	}
 //	novaRota->setPonto(0);
 	novaRota->setCusto();
 	

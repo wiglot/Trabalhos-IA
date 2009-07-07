@@ -36,14 +36,14 @@ using namespace std;
 
 int main(int argc, char **argv){
 	Read le = Read();
-	if (argc > 1)
+	if (argc > 1){
 		le.setFile(string(argv[1]));
-	cout << "Vai ler arquivo..." << endl;
-	InstanceVRP vrp = le.readVRP();
-	cout << "Criando matriz..." << endl;
-	vrp.criaMatrizDistancias();
-	cout << "Matriz criada..." << endl;
-	Solucao* sol = new Solucao(&vrp, 2);
+		InstanceVRP vrp = le.readVRP();
+		vrp.criaMatrizDistancias();
+		Solucao* sol = new Solucao(&vrp, 30);
+		sol->start(200);
+	}else
+		cout << "Indique um arquivo de instancia.\n";
 	//vrp.imprimeMatrizDistancias();
 	return 0;
 }

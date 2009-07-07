@@ -29,6 +29,9 @@ public:
 
 	void corrigeRota();
 	
+	bool validaRota();
+	
+	void mutate(double prob = 1.0);
 //	inline bool operator<(const Rota& rota){
 //		return (this->custoRota < rota.getCusto());
 //	}

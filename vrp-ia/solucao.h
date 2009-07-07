@@ -16,6 +16,8 @@ public:
 	
 	inline int getNumSolucoes(){return numSolucoes;}
 	
+	void start(int numGeracoes, int elite = 20);
+	
 private:
 	vector<Rota*> rotas;
 	int numSolucoes;
@@ -23,9 +25,12 @@ private:
 	
 	void rankeia();
 	void geraTodasRotas();
-	Rota* geraRota();
+	Rota* geraRotaHeuristica();
+	Rota* geraRotaAleatoria();
 	bool getVisitado(vector<int> visitados, int pos);
-
+	
+	
+	
 	Rota* crossover2(Rota* rota1, Rota* rota2);
 	Rota* crossover1(Rota* rota1, Rota* rota2);
 	Rota* crossover(Rota* rota1, Rota* rota2);
