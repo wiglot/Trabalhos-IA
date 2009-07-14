@@ -23,7 +23,7 @@ void InstanceVRP::criaMatrizDistancias(){
 	double d;
 	this->m = new double*[points.size()];
 
-	cout << "criando  distancias para pontos...\n" ;	
+//	cout << "criando  distancias para pontos...\n" ;	
 	for(i = 0; i < this->points.size(); i++){
 		this->m[i] = new double[i];
 		for(j = 0; j < i; j++){

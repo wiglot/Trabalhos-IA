@@ -22,7 +22,7 @@ void Rota::setCusto(){
 	int j;
 	this->custoRota = 0.0;
 	for(j = 0; j < (this->rota.size() - 1); j++){
-		this->custoRota += this->i->getDistancia(rota[j], rota[j+1]);
+		this->custoRota += this->inst->getDistancia(rota[j], rota[j+1]);
 	}
 }
 
@@ -37,8 +37,8 @@ void Rota::corrigeRota(){
 		rota.insert(rota.begin(), 0);
 	capacidade = 0.0;
 	for (j = 0; j < this->rota.size(); j++){
-		if ((capacidade + i->getPoint(this->rota[j])->getDemand()) <= i->getCapacity())
-			capacidade += i->getPoint(this->rota[j])->getDemand();
+		if ((capacidade + inst->getPoint(this->rota[j])->getDemand()) <= inst->getCapacity())
+			capacidade += inst->getPoint(this->rota[j])->getDemand();
 		else{
 			rota.insert(rota.begin()+j, 0);
 			capacidade = 0.0;
@@ -64,25 +64,32 @@ void Rota::mutate(double prob){
 }
 
 bool Rota::validaRota(){
-	int i, j;
+	int i;
 	bool *visitado;
+	double capacidade = 0;
+	visitado = new bool[this->inst->getNumPoints()];
 
-	visitado = new bool[this->i->getNumPoints()];
-
-	for (i = 0; i < this->i->getNumPoints(); i++)
+	for (i = 0; i < this->inst->getNumPoints(); i++)
 		visitado[i] = false;
 
 	for(i = 0; i < this->getTamanho(); i++){
 		if (!visitado[this->getPonto(i)]){
+			if (this->getPonto(i) == 0)
+				capacidade = 0;
+			if (capacidade + inst->getPoint(this->rota[i])->getDemand() > inst->getCapacity())
+				return false;
+			capacidade += this->inst->getPoint(this->rota[i])->getDemand();
 			if (this->getPonto(i) != 0)
 				visitado[this->getPonto(i)] = true;
+			
+			
 		}else{
-			cout << "Dois pontos Visitados" << i << endl;
+			//cout << "Dois pontos Visitados" << i << endl;
 			return false;
 		}
 
 	}
-	for(i = 1; i < this->i->getNumPoints(); i++)
+	for(i = 1; i < this->inst->getNumPoints(); i++)
 		if (!visitado[i])
 			return false;
 			

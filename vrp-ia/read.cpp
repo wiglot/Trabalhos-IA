@@ -71,7 +71,7 @@ InstanceVRP Read::readVRP ( ){
 		vrp->setName(line.substr(pos+1));
 	else
 		vrp->setName(this->file);	
-	cout << "Reading: "<< vrp->getName() << " Instance."<< endl;
+//	cout << "Reading: "<< vrp->getName() << " Instance."<< endl;
 	
 	getline (file_ptr, line);	
 	getline (file_ptr, line);
@@ -120,7 +120,7 @@ InstanceVRP Read::readVRP ( ){
 		pos = newpos  + 1;
 		newpos = line.find_first_of(" ", pos+1);
 		vrp->getPoint(j - 1)->setDemand( Read::str2int(line.substr(pos, newpos-pos)));
-		cout << vrp->getPoint(j-1)->getDemand() << endl;
+//		cout << vrp->getPoint(j-1)->getDemand() << endl;
 	}
 	
 	getline (file_ptr, line);
@@ -128,7 +128,7 @@ InstanceVRP Read::readVRP ( ){
 	getline (file_ptr, line);
 	vrp->setDeposit(Read::str2int(line)-1);
 	for (i = 0; i < vrp->getNumPoints(); i++)
-	cout << vrp->getPoint(i)->getNumber() << endl;
+//	cout << vrp->getPoint(i)->getNumber() << endl;
 	
 	file_ptr.close();
 
