@@ -35,16 +35,6 @@ void Solucao::geraTodasRotas(){
 	unsigned short i;
 	Rota* tmp;
 
-/*	for (i = 0 ; i < (this->getNumSolucoes()/2); i++){
-		tmp = geraRotaHeuristica();
-		if (tmp->validaRota())
-			rotas.push_back(tmp);
-		else{
-			i--;
-			cout << "gerada rota invalida!\n";
-		}
-	}
-*/
 	
 	for (i = 0 ; i < (this->getNumSolucoes()); i++){
 		tmp = geraRotaAleatoria();
@@ -208,8 +198,19 @@ void Solucao::start(int numGeracoes, int elite){
 			int rota2 = (rand()%(this->numSolucoes-elite))+elite;
 			//cout << "Crossover entre rota " << rota1  << " e " << rota2 << endl;
 			tmp = crossover(rotas[rota1], rotas[rota2]);
-			if (tmp != 0)
-				rotas.push_back(tmp);
+			if (tmp != 0){
+				for (unsigned short count = 0; count < numGeracoes; count++){
+					if((*tmp) == (rotas[i])){
+						delete tmp;
+						tmp = 0;
+						break; //Sai do laço interno...
+					}
+				}
+				if (tmp != 0)
+					rotas.push_back(tmp);
+				else
+					j--;
+			}
 			else{
 				j--;
 			}
@@ -231,6 +232,8 @@ void Solucao::start(int numGeracoes, int elite){
 
 void Solucao::rankeia(){
 	int i, j;
+	Rota* tmp;
+	int extremes = (int)ceil((5.0/this->getNumSolucoes()) * 100);
 	
 	for ( i = 0; i < this->rotas.size(); i++){
 		for (j = i+1; j < this->rotas.size(); j++){
@@ -243,9 +246,16 @@ void Solucao::rankeia(){
 	}
 		
 	if (rotas.size() > this->getNumSolucoes()){
-		for (i = this->getNumSolucoes(); i < rotas.size(); i++)
+		for (i = this->getNumSolucoes()-extremes; i < rotas.size(); i++)
 			delete rotas.at(i);
-		rotas.erase (rotas.begin()+this->getNumSolucoes(), rotas.end());
+		rotas.erase (rotas.begin()+this->getNumSolucoes()-extremes, rotas.end());
+	}
+	
+	for (i = 0; i < extremes; i++){
+		do{
+			tmp = geraRotaAleatoria();
+		}while(!tmp->validaRota());
+		rotas.push_back(tmp);
 	}
 	
 }

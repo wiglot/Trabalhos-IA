@@ -36,6 +36,18 @@ public:
 //		return (this->custoRota < rota.getCusto());
 //	}
 
+	bool operator==(Rota *rota){
+	    bool equal = false;
+	    if (this->rota.size() == rota->getTamanho()){
+		for (unsigned short i = 0; i < this->rota.size(); i++ ){
+		    if (this->getPonto(i) != rota->getPonto(i))
+			return false;
+		}
+	    }else
+		return false;
+	    return true;
+	
+	}
 };
 
 #endif
