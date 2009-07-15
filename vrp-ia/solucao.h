@@ -22,7 +22,7 @@ private:
 	vector<Rota*> rotas;
 	int numSolucoes;
 	InstanceVRP* instance;
-	
+	void round();
 	void rankeia();
 	void geraTodasRotas();
 	Rota* geraRotaHeuristica();

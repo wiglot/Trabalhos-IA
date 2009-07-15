@@ -52,7 +52,7 @@ void Rota::mutate(double prob){
 	unsigned short count, pos;
 	int tmp;
 	for (count = 0;  count < this->rota.size(); count++){
-		if (((rand()%1000)/10.0) < prob){
+		if (((rand()%100)) < prob){
 			pos = rand()%(this->rota.size()-1);
 			if (pos >= count)
 				pos++;
@@ -67,10 +67,16 @@ bool Rota::validaRota(){
 	int i;
 	bool *visitado;
 	double capacidade = 0;
+
+//	if ( ( (this->inst->getNumPoints()*2 ) +1 ) < this->getTamanho() || this->getTamanho() < this->inst->getNumPoints() )
+//		return false;
+	
 	visitado = new bool[this->inst->getNumPoints()];
+
 
 	for (i = 0; i < this->inst->getNumPoints(); i++)
 		visitado[i] = false;
+		
 
 	for(i = 0; i < this->getTamanho(); i++){
 		if (!visitado[this->getPonto(i)]){
@@ -82,7 +88,6 @@ bool Rota::validaRota(){
 			if (this->getPonto(i) != 0)
 				visitado[this->getPonto(i)] = true;
 			
-			
 		}else{
 			//cout << "Dois pontos Visitados" << i << endl;
 			return false;
@@ -92,7 +97,6 @@ bool Rota::validaRota(){
 	for(i = 1; i < this->inst->getNumPoints(); i++)
 		if (!visitado[i])
 			return false;
-			
-	//ToDO Fazer teste de capacidades.		
+	delete []visitado;			
 	return true;
 }

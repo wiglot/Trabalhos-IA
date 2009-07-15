@@ -1,6 +1,9 @@
 
 #ifndef ROTA_H
 #define ROTA_H
+#include <iostream>
+
+using namespace std;
 
 class InstanceVRP;
 
@@ -36,6 +39,22 @@ public:
 //		return (this->custoRota < rota.getCusto());
 //	}
 
+	bool operator==(Rota *rota){
+	
+	    if (this->rota.size() == rota->getTamanho()){
+			for (unsigned short i = 0; i < this->rota.size(); i++ ){
+				if (this->getPonto(i) != rota->getPonto(i)){
+				//	cout << "pontos diferentes: " << i << ": " << this->getPonto(i) << " _ "<<  rota->getPonto(i) << endl;
+					return false;
+				}
+			}
+	    }else{
+	    //	cout << "Tamanho diferente " << this->rota.size() << " - " << rota->getTamanho() << endl;
+			return false;
+				
+		}
+	    return true;
+	
+	}
 };
-
 #endif

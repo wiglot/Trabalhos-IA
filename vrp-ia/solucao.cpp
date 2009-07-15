@@ -30,6 +30,7 @@ Solucao::Solucao(InstanceVRP* instance, int numSolucoes)
 	for (unsigned short j = 0; j < this->numSolucoes; j++){
 		cout << rotas[j]->getCusto() << ";" ;
 	}
+	cout << endl;
 	//cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << " Custo Rota 3: "<< rotas[2]->getCusto() << " Custo Rota 4: "<< rotas[3]->getCusto()<< endl;
 	
 }
@@ -198,8 +199,8 @@ bool Solucao::getVisitado(vector<int> visitados, int pos){
 }
 
 void Solucao::start(int numGeracoes, int elite){
-	int i, j;
-	
+	int i, j, k = 0;
+	int rota1, rota2;
 	//vector <Rota*> novosIndividuos;
 	Rota* tmp;
 	elite = ceil(numSolucoes/100.0 * elite);
@@ -207,20 +208,51 @@ void Solucao::start(int numGeracoes, int elite){
 	for (i = 0 ; i< numGeracoes; i++){
 	
 		for (j = 0; j < this->numSolucoes; j++){
-			int rota1 = rand()%elite;
-			int rota2 = (rand()%(this->numSolucoes-elite))+elite;
+		
+			//k conta o número de rotas geradas mas que são repitidas.
+			if (k > 20){
+				k = 0;
+				do{
+					rota1 = rand()%elite;
+					rota2 = (rand()%(this->numSolucoes-elite))+elite;
+					tmp = crossover(rotas[rota1], rotas[rota2]);
+				}while (tmp == 0);
+				//cout << "20 rotas geradas e nenhuma é inedita... removendo rota e inserindo no final...\n";
+				for (unsigned short count = 0; count < (this->numSolucoes/2); count++){
+					if((*tmp) == (rotas[count])){
+						delete rotas[count];
+						rotas.erase(rotas.begin()+count);
+						rotas[count] = tmp;
+						j++;
+						break; //Sai do laço interno...
+					}
+				}
+			}
 			//cout << "Crossover entre rota " << rota1  << " e " << rota2 << endl;
-			tmp = crossover(rotas[rota1], rotas[rota2]);
-			if (tmp != 0)
+			do{
+				rota1 = rand()%elite;
+				rota2 = (rand()%(this->numSolucoes-elite))+elite;
+				tmp = crossover(rotas[rota1], rotas[rota2]);
+			}while(tmp == 0);
+			// Tentativa de uma busca Tabu, mas tah trancando...
+			for (unsigned short count = 0; count < (this->numSolucoes/2); count++){
+				if((*tmp) == (rotas[count])){
+					delete tmp;
+					tmp = 0;
+					break; //Sai do laço interno...
+				}
+			}
+			if (tmp != 0){
 				rotas.push_back(tmp);
+				k = 0;
+			}
 			else{
 				j--;
+				k++;
 			}
-			//cout << "Terminou crossover \n";
-		}
-		//Tinha que ter round, n�o apenas ranking...
 		
-		rankeia();
+		}
+		round();	
 		for (j = 0; j < this->numSolucoes; j++){
 			cout << rotas[j]->getCusto() << ";" ;
 		}
@@ -228,29 +260,12 @@ void Solucao::start(int numGeracoes, int elite){
 		
 	}
 	
-	cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << " Custo Rota 3: "<< rotas[2]->getCusto() << " Custo Rota 4: "<< rotas[3]->getCusto()<< endl;
+	//cout << "Custo rota 1:" << rotas[0]->getCusto() << " Custo Rota 2: "<< rotas[1]->getCusto() << " Custo Rota 3: "<< rotas[2]->getCusto() << " Custo Rota 4: "<< rotas[3]->getCusto()<< endl;
 
 }
 
 void Solucao::rankeia(){
 	int i, j;
-	Rota* r;
-	
-		
-	//Existe a probabilidade de 5% de um elemento da nova geração passar a ser da 
-	if (rotas.size() > this->getNumSolucoes()){
-		for (i = this->getNumSolucoes(); i < rotas.size(); i++){
-			if ((rand()%100) < 5){
-				r = rotas.at(i);
-				rotas[i] = rotas[i-this->getNumSolucoes()];
-				rotas[i-this->getNumSolucoes()] = r;
-			}
-			delete rotas.at(i);
-		}
-		rotas.erase (rotas.begin()+this->getNumSolucoes(), rotas.end());
-	}
-	
-	
 	for ( i = 0; i < this->rotas.size(); i++){
 		for (j = i+1; j < this->rotas.size(); j++){
 			if ((rotas.at(j)->getCusto()) < (rotas.at(i))->getCusto()){
@@ -261,6 +276,43 @@ void Solucao::rankeia(){
 		}
 	}
 	
+}
+
+void Solucao::round(){
+	int extremes = (int)ceil((5.0/this->getNumSolucoes()) * 100);
+	int i, j;
+	Rota *r;
+	
+	//Existe a probabilidade de 5% de um elemento da nova geração passar a ser da 
+	if (rotas.size() > this->getNumSolucoes()){
+		for (i = this->getNumSolucoes(); i < rotas.size(); i++){
+			if (rotas.at(i)->getCusto() < rotas[0]->getCusto()){
+				r = rotas[0];
+				rotas[0] = rotas[i];
+				rotas[i] = r;	
+			}
+			if (i-this->getNumSolucoes() > extremes && i-this->getNumSolucoes() < this->getNumSolucoes())
+				if ((rand()%100) < 5){
+					r = rotas.at(i);
+					rotas[i] = rotas[i-this->getNumSolucoes()];
+					rotas[i-this->getNumSolucoes()] = r;
+				}
+			
+			delete rotas.at(i);
+		}
+		rotas.erase (rotas.begin()+this->getNumSolucoes(), rotas.end());
+	}
+	
+	for (i = this->getNumSolucoes()-(2*extremes); i < this->getNumSolucoes(); i++){
+		do{
+			r = geraRotaAleatoria();
+		}while(!r->validaRota());
+		delete rotas.at(i);
+		rotas.at(i) = r;
+	}
+	
+	rankeia();
+
 }
 
 Rota* Solucao::crossover(Rota* rota1, Rota* rota2){
