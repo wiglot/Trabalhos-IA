@@ -203,7 +203,7 @@ void Solucao::start(int numGeracoes, int elite){
 	int rota1, rota2;
 	//vector <Rota*> novosIndividuos;
 	Rota* tmp;
-	elite = ceil(numSolucoes/100.0 * elite);
+	elite = ceil((elite/100.0) * numSolucoes);
 	
 	for (i = 0 ; i< numGeracoes; i++){
 	
@@ -218,7 +218,7 @@ void Solucao::start(int numGeracoes, int elite){
 					tmp = crossover(rotas[rota1], rotas[rota2]);
 				}while (tmp == 0);
 				//cout << "20 rotas geradas e nenhuma é inedita... removendo rota e inserindo no final...\n";
-				for (unsigned short count = 0; count < (this->numSolucoes/2); count++){
+				for (unsigned short count = 0; count < (this->numSolucoes); count++){
 					if((*tmp) == (rotas[count])){
 						delete rotas[count];
 						rotas.erase(rotas.begin()+count);
@@ -235,7 +235,7 @@ void Solucao::start(int numGeracoes, int elite){
 				tmp = crossover(rotas[rota1], rotas[rota2]);
 			}while(tmp == 0);
 			// Tentativa de uma busca Tabu, mas tah trancando...
-			for (unsigned short count = 0; count < (this->numSolucoes/2); count++){
+			for (unsigned short count = 0; count < (this->numSolucoes); count++){
 				if((*tmp) == (rotas[count])){
 					delete tmp;
 					tmp = 0;
@@ -279,7 +279,7 @@ void Solucao::rankeia(){
 }
 
 void Solucao::round(){
-	int extremes = (int)ceil((5.0/this->getNumSolucoes()) * 100);
+	int extremes = (int)ceil((5.0/100)* this->getNumSolucoes());
 	int i, j;
 	Rota *r;
 	

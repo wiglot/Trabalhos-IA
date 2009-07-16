@@ -40,8 +40,8 @@ int main(int argc, char **argv){
 		le.setFile(string(argv[1]));
 		InstanceVRP vrp = le.readVRP();
 		vrp.criaMatrizDistancias();
-		Solucao* sol = new Solucao(&vrp, 50);
-		sol->start(800, 25);
+		Solucao* sol = new Solucao(&vrp, 100);
+		sol->start(8000, 20);
 	}else
 		cout << "Indique um arquivo de instancia.\n";
 	//vrp.imprimeMatrizDistancias();

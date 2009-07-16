@@ -1,5 +1,15 @@
 Trabalhos de IA apresentados na disciplina 2009/01 da UNIPAMPA
 
 VRP-IA - Problema de roteamento de veiculos.
+Compilando:
+Para compilar o VRP-IA, apenas digite:
+g++ main.cpp rota.cpp solucao.cpp instancevrp.cpp point.cpp read.cpp -o vrp
+
+para rodar indique a instancia pela linha de comando:
+./vrp instances/M-n101-k10.vrp
+
+
+ 
 Jogos Numeros - Quebra cabeça dos 8 números com heuristicas.
+
 
